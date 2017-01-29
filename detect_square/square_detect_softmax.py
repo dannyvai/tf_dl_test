@@ -34,7 +34,7 @@ import tensorflow as tf
 FLAGS = None
 
 NUM_LABELS = 2
-TEST_PERCENT = 0.2
+TEST_PERCENT = 0.4
 
 def main(_):
   # Import data
@@ -80,6 +80,9 @@ def main(_):
 #  print( test_labels )
 #  import sys
 #  sys.exit(0)
+
+
+
   # Create the model
   x = tf.placeholder(tf.float32, [None, 784])
   W = tf.Variable(tf.zeros([784, NUM_LABELS])+np.random.rand(784,2) )
@@ -88,6 +91,9 @@ def main(_):
 
   # Define loss and optimizer
   y_ = tf.placeholder(tf.float32, [None, NUM_LABELS])
+
+  saver = tf.train.Saver()
+
 
   # The raw formulation of cross-entropy,
   #
@@ -134,7 +140,11 @@ def main(_):
     print(sess.run(W))
     cv2.imshow('rect_filter',(sess.run(W)[:,0].reshape(28,28)*255).astype('uint8'))
     cv2.imshow('not rect',(sess.run(W)[:,1].reshape(28,28)*255).astype('uint8'))
-    cv2.waitKey(1000)
+    cv2.waitKey(10)
+
+  save_path = saver.save(sess, "./model.ckpt")
+  print("Model saved in file: %s" % save_path)
+
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument('--data_dir', type=str, default='/tmp/tensorflow/mnist/input_data',
