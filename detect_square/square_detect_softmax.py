@@ -28,6 +28,7 @@ from os import listdir
 from os.path import isfile, join
 from tensorflow.examples.tutorials.mnist import input_data
 import numpy as np
+from numpy import linalg as LA
 import cv2
 import tensorflow as tf
 
@@ -57,6 +58,7 @@ def main(_):
   for file in onlyfiles:
       img = cv2.imread('./data/'+file)[:,:,0].reshape(784)
       #print(img)
+      #eq_img = ((img)/255.0)
       eq_img = ((img-128.0)/128.0)
       #print(eq_img)
 
@@ -111,7 +113,8 @@ def main(_):
   sess = tf.InteractiveSession()
   tf.global_variables_initializer().run()
   # Train
-  batchs = int(len(onlyfiles)/10)
+  batch_size = 100
+  batchs = int(len(onlyfiles)/batch_size)
   train_batch_size = int(train_size / batchs)
   test_batch_size = int(test_size / batchs)
   train_offset = 0
@@ -123,7 +126,8 @@ def main(_):
     train_offset += train_batch_size
 
     sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
-    print(sess.run(y,feed_dict={x:batch_xs}))
+    myY = sess.run(y,feed_dict={x:batch_xs})
+    print('Cross :: {}'.format( sess.run(tf.nn.softmax(myY))) )
     # Test trained model
     correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
@@ -137,9 +141,10 @@ def main(_):
                                       y_: test_ys}))
 
 
-    print(sess.run(W))
-    cv2.imshow('rect_filter',(sess.run(W)[:,0].reshape(28,28)*255).astype('uint8'))
-    cv2.imshow('not rect',(sess.run(W)[:,1].reshape(28,28)*255).astype('uint8'))
+    myW = sess.run(W)
+    print("{},{}".format(LA.norm(myW[:,0]),LA.norm(myW[:1])))
+    cv2.imshow('rect_filter',cv2.resize((myW[:,0].reshape(28,28)*255.0).astype('uint8'),(280,280)))
+    cv2.imshow('not rect',cv2.resize((myW[:,1].reshape(28,28)*255.0).astype('uint8'),(280,280)))
     cv2.waitKey(10)
 
   save_path = saver.save(sess, "./model.ckpt")

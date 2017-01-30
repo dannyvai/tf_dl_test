@@ -6,12 +6,11 @@ import argparse
 import sys
 from os import listdir
 from os.path import isfile, join
-from tensorflow.examples.tutorials.mnist import input_data
 import numpy as np
 import cv2
 import tensorflow as tf
 import random
-
+from numpy import linalg as LA
 
 def create_square():
   img = np.zeros((28,28),np.uint8)
@@ -23,6 +22,12 @@ def create_square():
   img = img-128.0
   img = (img/128.0)
   #print(img)
+  return img.reshape(1,784)
+
+def create_rand():
+  img = (np.random.rand(28,28)*255).astype('uint8')
+  img = img - 128.0
+  img = (img/128.0)
   return img.reshape(1,784)
 
 
@@ -44,4 +49,8 @@ with tf.Session() as sess:
   # Do some work with the mod
   print( sess.run(b) )
   print( sess.run(W) )
-  print( sess.run(y,feed_dict={x:create_square()}) )
+  myY = sess.run(y,feed_dict={x:create_square()})
+  print('Cross :: {}'.format( sess.run(tf.nn.softmax(myY))) )
+  myY = sess.run(y,feed_dict={x:create_rand()})
+  print('Cross :: {}'.format( sess.run(tf.nn.softmax(myY))) )
+
