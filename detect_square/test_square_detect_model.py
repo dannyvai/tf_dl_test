@@ -49,8 +49,14 @@ with tf.Session() as sess:
   # Do some work with the mod
   print( sess.run(b) )
   print( sess.run(W) )
-  myY = sess.run(y,feed_dict={x:create_square()})
-  print('Cross :: {}'.format( sess.run(tf.nn.softmax(myY))) )
-  myY = sess.run(y,feed_dict={x:create_rand()})
-  print('Cross :: {}'.format( sess.run(tf.nn.softmax(myY))) )
-
+  
+  sum = np.zeros((1,2),np.int64)
+  for _ in range(100):
+      myY = sess.run(y,feed_dict={x:create_square()})
+      sum += sess.run(tf.nn.softmax(myY)).astype(np.int64)
+  for _ in range(100):
+      myY = sess.run(y,feed_dict={x:create_rand()})
+      ret= sess.run(tf.nn.softmax(myY))
+      print(ret)
+      sum += ret.astype(np.int64)
+  print("Sum is {}".format(sum))

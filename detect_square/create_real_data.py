@@ -10,7 +10,7 @@ for i in range(0,4000):
     top_left = (int(random.random()*26),int(random.random()*26))
     bottom_right = ( int((28 - top_left[0])*random.random()),int((28 - top_left[1])*random.random())) 
     rotate_deg = random.random()*180
-    cv2.rectangle(img,top_left,bottom_right,255)
+    cv2.rectangle(img,top_left,bottom_right,int(random.random()*256))
 
     rows,cols = img.shape
 
